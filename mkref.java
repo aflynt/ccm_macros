@@ -1,5 +1,6 @@
 // STAR-CCM+ macro: mkref.java
 // Written by STAR-CCM+ 14.02.012
+//  make a bunch of points in r, theta, z
 package macro;
 
 import java.util.*;
@@ -18,6 +19,7 @@ public class mkref extends StarMacro {
 
     Simulation simulation_0 = getActiveSimulation();
 
+    // reference part
     PointPart pp_ref = ((PointPart) simulation_0.getPartManager().getObject("p_r[+10]_t[000]"));
     Units u_ft  = ((Units) simulation_0.getUnitsManager().getObject("ft"));
     Units u_deg = ((Units) simulation_0.getUnitsManager().getObject("deg"));
@@ -30,12 +32,16 @@ public class mkref extends StarMacro {
     double tmax = 315.0;
     double dt   =  45.0;
     double t = 0.0;
+    double z = 5.0
     int i, j;
 
+    // Assumes cylindrical coordinates
+    //// iterate over radius
     //for (i=0; r <= rmax ; i++){
     for ( i=0; i < 41 ; i++){
       r = r0 + i*dr;
 
+      // iterate over theta
       //for (j=0; t < tmax +1.0 ; j++){
       for ( j=0; j < 1 ; j++){
 
@@ -48,10 +54,11 @@ public class mkref extends StarMacro {
 
         System.out.println(name + " = " + r + "," + t);
 
+        // make a new point
         PointPart pp     = simulation_0.getPartManager().createPointPart(new NeoObjectVector(new Object[] {}), new DoubleVector(new double[] {0.0, 0.0, 0.0}));
         pp.copyProperties(pp_ref);
         pp.setPresentationName(name);
-        pp.getPointCoordinate().setCoordinate(u_ft, u_deg, u_mm, new DoubleVector(new double[] { r, t, 5.0}));
+        pp.getPointCoordinate().setCoordinate(u_ft, u_deg, u_mm, new DoubleVector(new double[] { r, t, z}));
       }
     }
   }
