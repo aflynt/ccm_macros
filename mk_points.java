@@ -27,7 +27,7 @@ public class mk_points extends StarMacro {
 
 
     int i, j, k;
-    double z = 0.0
+    double z = 0.0;
     double zref = 0.002 - 0.6096;
 
     // Assumes cylindrical coordinates
@@ -47,9 +47,12 @@ public class mk_points extends StarMacro {
         System.out.println(name + " = " + x + "," + y);
 
         // make a new point
-        PointPart pp     = simulation_0.getPartManager().createPointPart(new NeoObjectVector(new Object[] {}), new DoubleVector(new double[] {0.0, 0.0, 0.0}));
-        pp.copyProperties(pp_ref);
-        pp.setPresentationName(name);
+        PointPart upp     = simulation_0.getPartManager().createPointPart(new NeoObjectVector(new Object[] {}), new DoubleVector(new double[] {0.0, 0.0, 0.0}));
+        PointPart dpp     = simulation_0.getPartManager().createPointPart(new NeoObjectVector(new Object[] {}), new DoubleVector(new double[] {0.0, 0.0, 0.0}));
+        upp.copyProperties(pp_ref);
+        dpp.copyProperties(pp_ref);
+        upp.setPresentationName('u'+name);
+        dpp.setPresentationName('d'+name);
 
 
         switch(j) {  // specify z based on y
@@ -79,7 +82,8 @@ public class mk_points extends StarMacro {
           default :  z =  0.0;
         }
 
-        pp.getPointCoordinate().setCoordinate(u_ft, u_ft, u_m, new DoubleVector(new double[] { x, y, z}));
+        upp.getPointCoordinate().setCoordinate(u_ft, u_ft, u_m, new DoubleVector(new double[] { x, y, z}));
+        dpp.getPointCoordinate().setCoordinate(u_ft, u_ft, u_m, new DoubleVector(new double[] { x, y, z-0.024}));
       }
     }
   }
