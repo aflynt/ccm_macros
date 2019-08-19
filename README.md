@@ -4,8 +4,9 @@
 
 General open interface to macros that are helpful when interacting with CCM+
 
-| boundarySet.java                     |  set all boundaries based on csv file|
+| MACRO                                |  Description |
 |--------------------------------------|--------------------------------------|
+| boundarySet.java                     |  set all boundaries based on csv file|
 | cmkPoint.java                        |  make point defined by function(s)   |
 | Fly.java                             |  test case for functions             |
 | mk_cp.java                           |  make multiple constrained planes    |
