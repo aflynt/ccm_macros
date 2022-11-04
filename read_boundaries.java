@@ -10,50 +10,42 @@ import star.flow.*;
 import star.energy.*;
 import star.species.*;
 import star.radiation.common.*;
+import star.cadmodeler.*;
+import star.meshing.*;
 
 public class read_boundaries extends StarMacro {
 
   private Simulation ss;
 
-  // physics continuum
-  String pc_gin = "g__gas_inlet";
-  String pc_gan = "g__gas_annulus";
-  String pc_gex = "g__gas_exhaust";
-  String pc_kao = "s__kaowool";
-  String pc_inc = "s__inconel_625";
-  String pc_cst = "s__carbon_steel";
-  String pc_ysz = "s__ysz";
+  private void make_regions_from_parts(){
 
-  // map of region# to physics name
-  Map<Integer,String> region_map = new HashMap<Integer, String>(){{
-    put(0  , pc_gin);
-    put(1  , pc_gin);
-    put(2  , pc_gan);
-    put(3  , pc_gex);
-    put(4  , pc_kao);
-    put(5  , pc_inc);
-    put(6  , pc_cst);
-    put(7  , pc_inc);
-    put(8  , pc_cst);
-    put(9  , pc_cst);
-    put(10 , pc_cst);
-    put(11 , pc_inc);
-    put(12 , pc_inc);
-    put(13 , pc_ysz);
-    put(14 , pc_gex);
-  }};
+    Collection<GeometryPart> parts =  ss.get(SimulationPartManager.class).getParts();
 
+    ss.getRegionManager().newRegionsFromParts( parts,"OneRegionPerPart",null,"OneBoundaryPerPartSurface",null,"OneFeatureCurve",null,RegionManager.CreateInterfaceMode.BOUNDARY,"OneEdgeBoundaryPerPart", null);
 
-  // map of boundary# to boundary type
-  // special case for: mdot, pres
-  Map<Integer,String> bc_map = new HashMap<Integer, String>(){{
-    put(2, "mdot");
-    put(3, "mdot");
-    put(4, "mdot");
-    put(5, "pres");
-    put(6, "pres");
-    put(7, "pres");
-  }};
+  }
+
+  private void add_regions_to_mesh(){
+
+    PartsMeshContinuum mesh = ((PartsMeshContinuum) ss.getContinuumManager().getContinuum("Parts Meshes"));
+
+    Collection<Region> rs = ss.getRegionManager().getRegions();
+
+    for (Region r : rs){
+      r.setMeshContinuum(mesh);
+    }
+
+  }
+
+  private void delete_outlet_interface(){
+
+    BoundaryInterface b1 = ((BoundaryInterface) ss.getInterfaceManager().getInterface("2_ANNULAR_DUCT/9_DS_BULKHEAD 2"));
+
+    b1.setResetOnRelativeMotion(false);
+    b1.setCloseOnFixedSide(false);
+
+    ss.getInterfaceManager().deleteInterfaces(b1);
+  }
 
   private void check_physics(){
     //loop over PhysicsContinuum
@@ -79,10 +71,38 @@ public class read_boundaries extends StarMacro {
       } catch (Exception e){ 
         ss.println("\t* region_number: "+rname+" : bad parse");
       }
-      return n
+      return n;
   }
 
   private void set_region_physics(){
+
+    // physics continuum
+    String pc_gin = "g__gas_inlet";
+    String pc_gan = "g__gas_annulus";
+    String pc_gex = "g__gas_exhaust";
+    String pc_kao = "s__kaowool";
+    String pc_inc = "s__inconel_625";
+    String pc_cst = "s__carbon_steel";
+    String pc_ysz = "s__ysz";
+
+    // map of region# to physics name
+    Map<Integer,String> region_map = new HashMap<Integer, String>(){{
+      put(0  , pc_gin);
+      put(1  , pc_gin);
+      put(2  , pc_gan);
+      put(3  , pc_gex);
+      put(4  , pc_kao);
+      put(5  , pc_inc);
+      put(6  , pc_cst);
+      put(7  , pc_inc);
+      put(8  , pc_cst);
+      put(9  , pc_cst);
+      put(10 , pc_cst);
+      put(11 , pc_inc);
+      put(12 , pc_inc);
+      put(13 , pc_ysz);
+      put(14 , pc_gex);
+    }};
 
     Collection<Region> rs = ss.getRegionManager().getRegions();
 
@@ -135,19 +155,15 @@ public class read_boundaries extends StarMacro {
     return n;
   }
 
-  private void set_boundary_type(){
+  private void set_axis_boundary_type(){
 
-    // boundary types
-    MassFlowBoundary bc_mdot = ((MassFlowBoundary) ss.get(ConditionTypeManager.class).get(MassFlowBoundary.class));
-    PressureBoundary bc_pres = ((PressureBoundary) ss.get(ConditionTypeManager.class).get(PressureBoundary.class));
-    AxisBoundary     bc_axis = ((AxisBoundary)     ss.get(ConditionTypeManager.class).get(AxisBoundary.class));
+    AxisBoundary bc_axis = ((AxisBoundary) ss.get(ConditionTypeManager.class).get(AxisBoundary.class));
 
     Collection<Region> rs = ss.getRegionManager().getRegions();
 
     // loop over regions
     for (Region r : rs){
       String rname = r.getPresentationName();
-      ss.println("== "+rname);
 
       Collection<Boundary> bs = r.getBoundaryManager().getBoundaries();
 
@@ -155,27 +171,8 @@ public class read_boundaries extends StarMacro {
       for (Boundary b: bs){
         String bname = b.getPresentationName();
         if (bname.equals("centerline")) {
-
           b.setBoundaryType(bc_axis);
-
-        } else if (bname.contains("#")) {
-          try {
-             int n = get_boundary_number(bname);
-             if (bc_map.containsKey(n)){
-
-                String bc_name = bc_map.get(n);
-                ss.println("\t_ "+ bname+" in for # "+ n + " = "+ bc_name);
-
-                switch (bc_name) {
-                  case "mdot": b.setBoundaryType(bc_mdot); break;
-                  case "pres": b.setBoundaryType(bc_pres); break;
-                  default    : break;
-                }
-             }
-          } catch (Exception e){ 
-            ss.println("\t* "+bname+": bad parse");
-          }
-        }
+        } 
       }
     }
   }
@@ -216,12 +213,16 @@ public class read_boundaries extends StarMacro {
   }
 
   private void set_mdot_boundary(Boundary b, double mdot, String units_mdot, double temp, String units_temp){
+    MassFlowBoundary bc_mdot = ((MassFlowBoundary) ss.get(ConditionTypeManager.class).get(MassFlowBoundary.class));
+    b.setBoundaryType(bc_mdot);
     set_mdot(b, mdot, units_mdot);
     set_rad_temp(b, temp, units_temp);
     set_tot_temp(b, temp, units_temp);
   }
 
   private void set_pressure_boundary(Boundary b, double p, String units_p, double temp, String units_temp){
+    PressureBoundary bc_pres = ((PressureBoundary) ss.get(ConditionTypeManager.class).get(PressureBoundary.class));
+    b.setBoundaryType(bc_pres);
     set_pressure(b, p, units_p);
     set_rad_temp(b, temp, units_temp);
     set_static_temp(b, temp, units_temp);
@@ -325,8 +326,12 @@ public class read_boundaries extends StarMacro {
 
     ss = getActiveSimulation();
 
+    //make_regions_from_parts();
+    //add_regions_to_mesh();
+    //delete_outlet_interface();
+
     //set_region_physics();
-    //set_boundary_type();
+    set_axis_boundary_type();
     set_boundary_conditions();
   }
 }
