@@ -72,13 +72,12 @@ public class read_boundaries extends StarMacro {
       return n;
   }
 
-  private void set_region_physics(){
+  private void set_region_physics(String fname){
 
     Map<Integer,String> region_map = new HashMap<Integer, String>();
 
     try {
-        String this_dir = "/shared/thor/home/flyntga/git/ccm_macros/";
-        BufferedReader br = new BufferedReader(new FileReader(this_dir+"regions.txt"));
+        BufferedReader br = new BufferedReader(new FileReader(fname));
         StringBuilder content = new StringBuilder();
         String line;
         ArrayList<String> as = new ArrayList<String>();
@@ -88,11 +87,11 @@ public class read_boundaries extends StarMacro {
         }
 
         for (String str : as){
-          String[] str_list = str.split("\\s*,\\s*");
+          String[] str_list = str.strip().split("\\s+");
           int region_num  = Integer.parseInt(str_list[0].strip());
-          String region_name = str_list[1];
-          //ss.println(String.format("%-20s",region_name)+" w/ #: "+region_num);
-          region_map.put(region_num, region_name);
+          String physics_name = str_list[1];
+          //ss.println(String.format("%-20s",physics_name)+" w/ #: "+region_num);
+          region_map.put(region_num, physics_name);
         }
         br.close();
     }
@@ -103,9 +102,32 @@ public class read_boundaries extends StarMacro {
 
     Collection<Region> rs = ss.getRegionManager().getRegions();
 
-    for (Region r : rs){
+    ArrayList<Region> ars = new ArrayList(rs);
 
-      int n = get_region_number(r.getPresentationName());
+    ars.sort( new Comparator<Region>(){
+
+      @Override
+      public int compare(Region left, Region right){
+          String Lname = left.getPresentationName();
+          String Rname = right.getPresentationName();
+          //return Lname.compareTo(Rname);
+          int nL = get_region_number(Lname);
+          int nR = get_region_number(Rname);
+          if (nL < nR){
+            return -1;
+          } else if ( nL == nR){
+            return 0;
+          } else {
+            return 1;
+          }
+      }
+    }
+    );
+
+    for (Region r : ars){
+
+      String rname = r.getPresentationName();
+      int n = get_region_number(rname);
 
       // lookup physics name in region_map
       String physics_name = region_map.get(n);
@@ -113,6 +135,7 @@ public class read_boundaries extends StarMacro {
       // set region physics
       PhysicsContinuum pc = ((PhysicsContinuum) ss.getContinuumManager().getContinuum(physics_name));
       r.setPhysicsContinuum(pc);
+      ss.println(String.format("Region %2d: %-20s %-20s", n, rname, physics_name));
     }
   }
 
@@ -236,7 +259,7 @@ public class read_boundaries extends StarMacro {
     stp.getMethod(ConstantScalarProfileMethod.class).getQuantity().setValueAndUnits(temp, uu);
   }
 
-  private void set_convective_boundary(Boundary b, double t_infinity, double h, String units_temp) {
+  private void set_convective_boundary(Boundary b, double t_infinity, String units_temp, double h ) {
     b.getConditions().get(WallThermalOption.class).setSelected(WallThermalOption.Type.CONVECTION);
 
     AmbientTemperatureProfile      atp = b.getValues().get(AmbientTemperatureProfile.class);
@@ -270,48 +293,73 @@ public class read_boundaries extends StarMacro {
 
   }
 
-  private void set_boundary_conditions(){
+  private void set_boundary_mole_fractions(int[] bc_nums, DoubleVector mole_fracs){
 
-    double T_inlet      = 1450.0;  // F
-    double T_annulus    =  120.0;  // F
-    double T_exhaust    = 3800.0;  // F
-    double T_backflow   = 1520.3;  // F
-    double T_infinity   =  110.0;  // F
-    double h_room       =    1.0;  // W/m^2-K
-    double mdot_inlet   =  120.0 / (2.0 * 3.14159); // lbm/s
-    double mdot_annulus =    3.0 / (2.0 * 3.14159); // lbm/s
+    // apply mole_fractions to boundary numbers in bc_nums
 
-    double p_atm = 101325.0/6894.76;   //psi
-    double p_center  = 1000.0 - p_atm; //psi
-    double p_annulus = 1050.0 - p_atm; //psi
-    double p_exhaust =  950.0 - p_atm; //psi
+    ArrayList<Boundary> bs = new ArrayList<Boundary>();
 
-    double q_flux = -631000.0; // W/m^2
+    for (int bc_num : bc_nums){
+      ArrayList<Boundary> bndry_list = get_boundaries_by_number(bc_num);
+      bs.addAll(bndry_list);
+    }
 
-    DoubleVector mole_fracs = new DoubleVector(new double[] {0.0089, 0.00151, 0.09734, 0.04819, 0.00893, 3.1E-4, 0.73761, 0.00312, 2.5E-4, 4.0E-5, 1.0E-5, 0.09379});
+    for (Boundary b: bs){
+        set_mole_fractions(b, mole_fracs);
+    }
+  }
 
-    // loop over boundary numbers
-    for (int n = 2; n <11; ++n){
+  private void set_boundary_conditions(String fname){
 
-      ArrayList<Boundary> blist = get_boundaries_by_number(n);
+    try {
+        BufferedReader br = new BufferedReader(new FileReader(fname));
+        String line;
+        ArrayList<String> as = new ArrayList<String>();
 
-      for (Boundary b : blist){
-        String bname = b.getPresentationName();
-        switch (n) {
-          case 2: set_mdot_boundary(b, mdot_inlet  , "lb/s", T_inlet  , "F"); break;
-          case 3: set_mdot_boundary(b, mdot_annulus, "lb/s", T_annulus, "F"); break;
-          case 4: set_mdot_boundary(b, mdot_inlet  , "lb/s", T_exhaust, "F");
-                  set_mole_fractions(b, mole_fracs); break;
-          case 5: set_pressure_boundary(b, p_center , "psi", T_inlet   , "F"); break;
-          case 6: set_pressure_boundary(b, p_annulus, "psi", T_annulus , "F"); break;
-          case 7: set_pressure_boundary(b, p_exhaust, "psi", T_backflow, "F"); 
-                  set_mole_fractions(b, mole_fracs); break;
-          case 8: set_temperature_boundary(b, T_inlet, "F"); break;
-          case 9:  set_convective_boundary(b, T_infinity, h_room, "F"); break;
-          case 10:  set_heat_flux_boundary(b, q_flux, "W/m^2"); break;
-          default: break;
+        while ((line = br.readLine()) != null) {
+          as.add(line);
         }
-      }
+
+        for (String str : as){
+          String[] str_list = str.strip().split("\\s+");
+          String comment = "";
+          String[] maybe_strlist = str.split("#");
+          if (maybe_strlist.length > 1) {
+            comment = maybe_strlist[1];
+          }
+
+          int bc_num  = Integer.parseInt(str_list[0].strip());
+          String bc_type = str_list[1].strip();
+          double p1_val  = Double.parseDouble(str_list[2].strip());
+          String p1_units = str_list[3].strip();
+          double p2_val  = Double.parseDouble(str_list[4].strip());
+          String p2_units = str_list[5].strip();
+          ss.print(String.format("# %2d: TYPE: %4s",bc_num, bc_type));
+          ss.print(String.format(" values: %10.3f %5s %10.3f %5s", p1_val, p1_units, p2_val, p2_units));
+          if (comment != ""){
+            ss.println(" for bc: "+comment);
+          } else {
+            ss.print("\n");
+          }
+
+          ArrayList<Boundary> blist = get_boundaries_by_number(bc_num);
+          for (Boundary b : blist){
+            switch (bc_type) {
+              case "mdot":        set_mdot_boundary(b, p1_val, p1_units, p2_val, p2_units); break;
+              case "pres":    set_pressure_boundary(b, p1_val, p1_units, p2_val, p2_units); break;
+              case "temp": set_temperature_boundary(b, p1_val, p1_units); break;
+              case "conv":  set_convective_boundary(b, p1_val, p1_units, p2_val); break;
+              case "flux":   set_heat_flux_boundary(b, p1_val, p1_units); break;
+              default:
+                break;
+            }
+          }
+        }
+        br.close();
+    }
+    catch (Exception e) {
+        System.out.println("bad parse of bc_file");
+        ss.println("bad parse of bc_file");
     }
   }
 
@@ -327,8 +375,16 @@ public class read_boundaries extends StarMacro {
     //add_regions_to_mesh();
     //delete_outlet_interface();
 
-    set_region_physics();
+    String pwd = "/shared/thor/home/flyntga/git/ccm_macros/";
+    String fname_regions    = pwd+"regions.txt";
+    String fname_boundaries = pwd+"boundaries.txt";
+
+    set_region_physics(fname_regions);
     //set_axis_boundary_type();
-    //set_boundary_conditions();
+    //set_boundary_conditions(fname_boundaries);
+
+    //int[] bc_nums = new int[] {4, 7};
+    //DoubleVector mole_fracs = new DoubleVector(new double[] {0.0089, 0.00151, 0.09734, 0.04819, 0.00893, 3.1E-4, 0.73761, 0.00312, 2.5E-4, 4.0E-5, 1.0E-5, 0.09379});
+    //set_boundary_mole_fractions(bc_nums, mole_fracs);
   }
 }
