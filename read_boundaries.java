@@ -3,6 +3,7 @@
 package macro;
 
 import java.util.*;
+import java.io.*;
 
 import star.common.*;
 import star.base.neo.*;
@@ -54,9 +55,6 @@ public class read_boundaries extends StarMacro {
       Continuum c = (Continuum) p;
       
       String pname = c.getPresentationName();
-      //if(pname.equals(pc_ysz)){
-      //  ss.println("ysz physics found !!!!!!");
-      //}
       ss.println("* "+pname);
     }
   }
@@ -76,33 +74,32 @@ public class read_boundaries extends StarMacro {
 
   private void set_region_physics(){
 
-    // physics continuum
-    String pc_gin = "g__gas_inlet";
-    String pc_gan = "g__gas_annulus";
-    String pc_gex = "g__gas_exhaust";
-    String pc_kao = "s__kaowool";
-    String pc_inc = "s__inconel_625";
-    String pc_cst = "s__carbon_steel";
-    String pc_ysz = "s__ysz";
+    Map<Integer,String> region_map = new HashMap<Integer, String>();
 
-    // map of region# to physics name
-    Map<Integer,String> region_map = new HashMap<Integer, String>(){{
-      put(0  , pc_gin);
-      put(1  , pc_gin);
-      put(2  , pc_gan);
-      put(3  , pc_gex);
-      put(4  , pc_kao);
-      put(5  , pc_inc);
-      put(6  , pc_cst);
-      put(7  , pc_inc);
-      put(8  , pc_cst);
-      put(9  , pc_cst);
-      put(10 , pc_cst);
-      put(11 , pc_inc);
-      put(12 , pc_inc);
-      put(13 , pc_ysz);
-      put(14 , pc_gex);
-    }};
+    try {
+        String this_dir = "/shared/thor/home/flyntga/git/ccm_macros/";
+        BufferedReader br = new BufferedReader(new FileReader(this_dir+"regions.txt"));
+        StringBuilder content = new StringBuilder();
+        String line;
+        ArrayList<String> as = new ArrayList<String>();
+
+        while ((line = br.readLine()) != null) {
+          as.add(line);
+        }
+
+        for (String str : as){
+          String[] str_list = str.split("\\s*,\\s*");
+          int region_num  = Integer.parseInt(str_list[0].strip());
+          String region_name = str_list[1];
+          //ss.println(String.format("%-20s",region_name)+" w/ #: "+region_num);
+          region_map.put(region_num, region_name);
+        }
+        br.close();
+    }
+    catch (Exception e) {
+        System.out.println("file not found!");
+        ss.println("file not found");
+    }
 
     Collection<Region> rs = ss.getRegionManager().getRegions();
 
@@ -330,8 +327,8 @@ public class read_boundaries extends StarMacro {
     //add_regions_to_mesh();
     //delete_outlet_interface();
 
-    //set_region_physics();
-    set_axis_boundary_type();
-    set_boundary_conditions();
+    set_region_physics();
+    //set_axis_boundary_type();
+    //set_boundary_conditions();
   }
 }
