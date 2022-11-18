@@ -38,9 +38,9 @@ public class read_boundaries extends StarMacro {
 
   }
 
-  private void delete_outlet_interface(){
+  private void delete_interface_by_name(String iface_name){
 
-    BoundaryInterface b1 = ((BoundaryInterface) ss.getInterfaceManager().getInterface("2_ANNULAR_DUCT/9_DS_BULKHEAD 2"));
+    BoundaryInterface b1 = ((BoundaryInterface) ss.getInterfaceManager().getInterface(iface_name));
 
     b1.setResetOnRelativeMotion(false);
     b1.setCloseOnFixedSide(false);
@@ -311,14 +311,24 @@ public class read_boundaries extends StarMacro {
 
   private void set_boundary_conditions(String fname){
 
+    ArrayList<String> as = new ArrayList<String>();
+
     try {
         BufferedReader br = new BufferedReader(new FileReader(fname));
         String line;
-        ArrayList<String> as = new ArrayList<String>();
 
         while ((line = br.readLine()) != null) {
+          //ss.println("LINE: "+line);
           as.add(line);
         }
+        br.close();
+    }
+    catch (Exception e) {
+        System.out.println("bad parse of bc_file");
+        ss.println("bad parse of bc_file");
+    }
+
+    try {
 
         for (String str : as){
           String[] str_list = str.strip().split("\\s+");
@@ -355,11 +365,9 @@ public class read_boundaries extends StarMacro {
             }
           }
         }
-        br.close();
-    }
-    catch (Exception e) {
-        System.out.println("bad parse of bc_file");
-        ss.println("bad parse of bc_file");
+    } catch (Exception e) {
+        System.out.println("BC ERROR");
+        ss.println("BC ERROR");
     }
   }
 
@@ -371,20 +379,23 @@ public class read_boundaries extends StarMacro {
 
     ss = getActiveSimulation();
 
-    //make_regions_from_parts();
-    //add_regions_to_mesh();
-    //delete_outlet_interface();
+    make_regions_from_parts();
+    add_regions_to_mesh();
+
+    String iface_name = "2_ANNULAR_DUCT/9_DS_BULKHEAD 2";
+    //String iface_name = "DELETE";
+    delete_interface_by_name(iface_name);
 
     String pwd = "/shared/thor/home/flyntga/git/ccm_macros/";
     String fname_regions    = pwd+"regions.txt";
     String fname_boundaries = pwd+"boundaries.txt";
 
     set_region_physics(fname_regions);
-    //set_axis_boundary_type();
-    //set_boundary_conditions(fname_boundaries);
+    set_axis_boundary_type();
+    set_boundary_conditions(fname_boundaries);
 
-    //int[] bc_nums = new int[] {4, 7};
-    //DoubleVector mole_fracs = new DoubleVector(new double[] {0.0089, 0.00151, 0.09734, 0.04819, 0.00893, 3.1E-4, 0.73761, 0.00312, 2.5E-4, 4.0E-5, 1.0E-5, 0.09379});
-    //set_boundary_mole_fractions(bc_nums, mole_fracs);
+    int[] bc_nums = new int[] {4, 7};
+    DoubleVector mole_fracs = new DoubleVector(new double[] {0.0089, 0.00151, 0.09734, 0.04819, 0.00893, 3.1E-4, 0.73761, 0.00312, 2.5E-4, 4.0E-5, 1.0E-5, 0.09379});
+    set_boundary_mole_fractions(bc_nums, mole_fracs);
   }
 }

@@ -1,9 +1,9 @@
- 2  mdot 19.0986  lb/s  1450.0 F  # center inlet
- 3  mdot  0.4775  lb/s   120.0 F  
- 4  mdot 19.0986  lb/s  3800.0 F  # exhaust inlet
- 5  pres 1000.0   psi   1450.0 F  # center exit
- 6  pres 1050.0   psi    120.0 F  # annular exit
- 7  pres  950.0   psi   1520.3 F  # exhaust exit
- 8  temp 1450.0   F        0.0 X  # comb casing 
- 9  conv  110.0   F        1.0 X  # TFL OD walls
-10  flux -63100.0 W/m^2    0.0 X  # exhaust duct OD
+ 2 mdot      19.0986 lb/s     1450.0000 F # center  inlet
+ 3 mdot       0.9549 lb/s      120.0000 F # annular inlet
+ 4 mdot      19.0986 lb/s     3800.0000 F # exhaust inlet
+ 5 pres     985.3041 psi      1450.0000 F # center  exit
+ 6 pres    1035.3041 psi       120.0000 F # annular exit
+ 7 pres     935.3041 psi      1520.3000 F # exhaust exit
+ 8 temp    1450.0000 F           0.0000 X # comb casing
+ 9 conv     110.0000 F           1.0000 X # TFL OD Wall
+10 flux -631000.0000 W/m^2       0.0000 X # exhaust duct OD

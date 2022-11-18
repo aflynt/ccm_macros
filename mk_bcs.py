@@ -26,20 +26,28 @@ def write_boundaries(ofname, boundaries):
     with open(ofname, 'w') as f:
         f.writelines(lines)
 
+# TEMPS (deg. F)
 T_inlet = 1450.0
 T_annulus = 120.0
 T_exhaust = 3800.0
 T_backflow = 1520.3
+
+# ROOM CONVECTION
 T_infinity = 110.0
 h_room = 1.0
-mdot_inlet   = 120.0 / (2.0 * m.pi)
-mdot_annulus =   3.0 / (2.0 * m.pi)
 
+# MDOT (lbm/s)
+mdot_inlet   = 120.0 / (2.0 * m.pi)
+mdot_annulus =   6.0 / (2.0 * m.pi)
+
+# PRESSURES (PSI)
 p_atm = 101325.0 / 6894.76  # psi
-p_center  = 1000.0 - p_atm
-p_annulus = 1050.0 - p_atm
-p_exhaust =  950.0 - p_atm
-q_flux    = -631000.0
+p_center  = 1000.0 - p_atm  # psi
+p_annulus = 1050.0 - p_atm  # psi
+p_exhaust =  950.0 - p_atm  # psi
+
+# FLUX (W/m^2)
+q_flux    = -631000.0       # W/m^2
 
 ofname = "boundaries.txt"
 
