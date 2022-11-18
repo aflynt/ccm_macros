@@ -17,14 +17,34 @@ public class BC_set extends StarMacro {
     execute0();
   }
 
-  private void set_bc_velo(Boundary b, double speed, String units){
-
-    InletBoundary inlet_bc_type = ((InletBoundary) ss.get(ConditionTypeManager.class).get(InletBoundary.class));
-    b.setBoundaryType(inlet_bc_type);
+  private void set_bc_velocity(Boundary b, double speed, String units){
 
     Units uu = ((Units) ss.getUnitsManager().getObject(units));
+    InletBoundary inlet_bc_type = ((InletBoundary) ss.get(ConditionTypeManager.class).get(InletBoundary.class));
+    b.setBoundaryType(inlet_bc_type);
     VelocityMagnitudeProfile vprofile = b.getValues().get(VelocityMagnitudeProfile.class);
     vprofile.getMethod(ConstantScalarProfileMethod.class).getQuantity().setValueAndUnits(speed, uu);
+  }
+
+  private void set_bc_pressure(Boundary b, double pressure, String units){
+
+    Units uu = ((Units) ss.getUnitsManager().getObject(units));
+    PressureBoundary bc_type_pres = ((PressureBoundary) ss.get(ConditionTypeManager.class).get(PressureBoundary.class));
+    b.setBoundaryType(bc_type_pres);
+    StaticPressureProfile pprofile = b.getValues().get(StaticPressureProfile.class);
+    pprofile.getMethod(ConstantScalarProfileMethod.class).getQuantity().setValueAndUnits(1.0, uu);
+  }
+
+  private void set_bc_slip(Boundary b){
+    b.getConditions().get(WallShearStressOption.class).setSelected(WallShearStressOption.Type.SLIP);
+  }
+
+  private void set_bc_road(Boundary b, double vx, String units){
+
+    Units uu = ((Units) ss.getUnitsManager().getObject(units));
+    b.getConditions().get(WallSlidingOption.class).setSelected(WallSlidingOption.Type.VECTOR);
+    WallRelativeVelocityProfile vprofile = b.getValues().get(WallRelativeVelocityProfile.class);
+    vprofile.getMethod(ConstantVectorProfileMethod.class).getQuantity().setComponentsAndUnits(vx, 0.0, 0.0, uu);
   }
 
   private void execute0() {
@@ -39,20 +59,23 @@ public class BC_set extends StarMacro {
     Boundary b5 = rr.getBoundaryManager().getBoundary("#05_outlet");
     Boundary b6 = rr.getBoundaryManager().getBoundary("#06_slip_wall");
     Boundary b7 = rr.getBoundaryManager().getBoundary("#07_rolling_road");
-    Units uu_kph = ((Units) ss.getUnitsManager().getObject("kph"));
 
-    PressureBoundary bc_type_pres = ((PressureBoundary) ss.get(ConditionTypeManager.class).get(PressureBoundary.class));
+    double v1 =   6.53;
+    double v2 =  -0.27;
+    double v3 =  -0.34;
+    double v4 = -20.35;
+    double v7 = 140.00;
+    double p5 =   0.00;
 
-    b5.setBoundaryType(bc_type_pres);
+    set_bc_velocity(b1, v1, "m/s");
+    set_bc_velocity(b2, v2, "m/s");
+    set_bc_velocity(b3, v3, "m/s");
+    set_bc_velocity(b4, v4, "m/s");
 
-    b6.getConditions().get(WallShearStressOption.class).setSelected(WallShearStressOption.Type.SLIP);
-    b7.getConditions().get(WallSlidingOption.class).setSelected(WallSlidingOption.Type.VECTOR);
-    WallRelativeVelocityProfile vwall = b7.getValues().get(WallRelativeVelocityProfile.class);
-    vwall.getMethod(ConstantVectorProfileMethod.class).getQuantity().setComponentsAndUnits(140.0, 0.0, 0.0, uu_kph);
+    set_bc_pressure(b5, p5, "Pa");
 
+    set_bc_slip(b6);
 
-    StaticPressureProfile pprofile = boundary_5.getValues().get(StaticPressureProfile.class);
-    Units uu_Pa = ((Units) ss.getUnitsManager().getObject("Pa"));
-    pprofile.getMethod(ConstantScalarProfileMethod.class).getQuantity().setValueAndUnits(1.0, uu_Pa);
+    set_bc_road(b7, v7, "kph");
   }
 }
