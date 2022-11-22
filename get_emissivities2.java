@@ -42,27 +42,34 @@ public class get_emissivities2 extends StarMacro {
       String sr3 = "3_EXHAUST_DUCT";
       String sr4 = "14_SPRAY";
 
-      trip_list.add(new Trip<String, Double, String>(sr1 , e_inconel , "Default [1_CENTER_DUCT/5_DUCT_INLET]"  ));
-      trip_list.add(new Trip<String, Double, String>(sr1 , e_inconel , "Default [1_CENTER_DUCT/5_DUCT_SPOOL]"  ));
-      trip_list.add(new Trip<String, Double, String>(sr1 , e_inconel , "Default [1_CENTER_DUCT/5_DUCT_CONTRACTION]"  ));
-
-      trip_list.add(new Trip<String, Double, String>(sr2 , e_inconel , "Default [2_ANNULAR_DUCT/5_DUCT_INLET]"));
-      trip_list.add(new Trip<String, Double, String>(sr2 , e_inconel , "Default [2_ANNULAR_DUCT/5_DUCT_SPOOL]"));
-      trip_list.add(new Trip<String, Double, String>(sr2 , e_inconel , "Default [2_ANNULAR_DUCT/5_DUCT_CONTRACTION]"));
-      trip_list.add(new Trip<String, Double, String>(sr2 , e_inconel , "FL [2_ANNULAR_DUCT/7_REAR_ADAPTER]"));
-      trip_list.add(new Trip<String, Double, String>(sr2 , e_inconel , "FU [2_ANNULAR_DUCT/7_REAR_ADAPTER 2]"));
-      trip_list.add(new Trip<String, Double, String>(sr2 , e_kaowool , "Default [2_ANNULAR_DUCT/4_INSULATION_CONTRACTION]"));
-      trip_list.add(new Trip<String, Double, String>(sr2 , e_kaowool , "Default [2_ANNULAR_DUCT/4_INSULATION_SPOOL]"));
-      trip_list.add(new Trip<String, Double, String>(sr2 , e_kaowool , "Default [2_ANNULAR_DUCT/4_INSULATION_INLET]"));
-
-      trip_list.add(new Trip<String, Double, String>(sr3 , e_inconel , "RU [3_EXHAUST_DUCT/7_REAR_ADAPTER]"));
-      trip_list.add(new Trip<String, Double, String>(sr3 , e_inconel , "RL [3_EXHAUST_DUCT/7_REAR_ADAPTER 2]"));
-      trip_list.add(new Trip<String, Double, String>(sr3 , e_ysz     , "SHD_ID [13_SHIELD_COATING/3_EXHAUST_DUCT]"));
-      trip_list.add(new Trip<String, Double, String>(sr3 , e_ysz     , "SHD_END [13_SHIELD_COATING/3_EXHAUST_DUCT 2]"));
-      trip_list.add(new Trip<String, Double, String>(sr3 , e_inconel , "SHD_END [12_SHIELD_METAL/3_EXHAUST_DUCT]"));
-      trip_list.add(new Trip<String, Double, String>(sr3 , e_inconel , "SHD_OD [12_SHIELD_METAL/3_EXHAUST_DUCT 2]"));
-
-      trip_list.add(new Trip<String, Double, String>(sr4 , e_inconel , "RU [14_SPRAY/7_REAR_ADAPTER]"  ));
+      trip_list.add(new Trip<String, Double, String>("1_CENTER_DUCT"  , 0.710 ,"Default [1_CENTER_DUCT/5_DUCT_INLET]"          ));
+      trip_list.add(new Trip<String, Double, String>("1_CENTER_DUCT"  , 0.710 ,"Default [1_CENTER_DUCT/5_DUCT_SPOOL]"          ));
+      trip_list.add(new Trip<String, Double, String>("1_CENTER_DUCT"  , 0.710 ,"Default [1_CENTER_DUCT/5_DUCT_CONTRACTION]"    ));
+      trip_list.add(new Trip<String, Double, String>("14_SPRAY"       , 0.710 ,"e6 [14_SPRAY/7_REAR_ADAPTER]"                  ));
+      trip_list.add(new Trip<String, Double, String>("2_ANNULAR_DUCT" , 0.600 ,"Default [2_ANNULAR_DUCT/4_INSULATION 1]"       ));
+      trip_list.add(new Trip<String, Double, String>("2_ANNULAR_DUCT" , 0.600 ,"Default [2_ANNULAR_DUCT/4_INSULATION]"         ));
+      trip_list.add(new Trip<String, Double, String>("2_ANNULAR_DUCT" , 0.600 ,"Default [2_ANNULAR_DUCT/4_INSULATION 2]"       ));
+      trip_list.add(new Trip<String, Double, String>("2_ANNULAR_DUCT" , 0.710 ,"Default [2_ANNULAR_DUCT/5_DUCT_INLET]"         ));
+      trip_list.add(new Trip<String, Double, String>("2_ANNULAR_DUCT" , 0.710 ,"Default [2_ANNULAR_DUCT/5_DUCT_SPOOL]"         ));
+      trip_list.add(new Trip<String, Double, String>("2_ANNULAR_DUCT" , 0.710 ,"Default [2_ANNULAR_DUCT/5_DUCT_CONTRACTION]"   ));
+      trip_list.add(new Trip<String, Double, String>("2_ANNULAR_DUCT" , 0.710 ,"r5 [2_ANNULAR_DUCT/7_REAR_ADAPTER]"            ));
+      trip_list.add(new Trip<String, Double, String>("2_ANNULAR_DUCT" , 0.710 ,"f3 [2_ANNULAR_DUCT/7_REAR_ADAPTER 2]"          ));
+      trip_list.add(new Trip<String, Double, String>("2_ANNULAR_DUCT" , 0.710 ,"f2 [2_ANNULAR_DUCT/7_REAR_ADAPTER 3]"          ));
+      trip_list.add(new Trip<String, Double, String>("2_ANNULAR_DUCT" , 0.710 ,"f1 [2_ANNULAR_DUCT/7_REAR_ADAPTER 4]"          ));
+      trip_list.add(new Trip<String, Double, String>("2_ANNULAR_DUCT" , 0.710 ,"r6 [2_ANNULAR_DUCT/7_REAR_ADAPTER 5]"          ));
+      trip_list.add(new Trip<String, Double, String>("2_ANNULAR_DUCT" , 0.710 ,"f4 [2_ANNULAR_DUCT/7_REAR_ADAPTER 6]"          ));
+      trip_list.add(new Trip<String, Double, String>("3_EXHAUST_DUCT" , 0.710 ,"e7 [3_EXHAUST_DUCT/7_REAR_ADAPTER]"            ));
+      trip_list.add(new Trip<String, Double, String>("3_EXHAUST_DUCT" , 0.710 ,"e1 [3_EXHAUST_DUCT/7_REAR_ADAPTER 2]"          ));
+      trip_list.add(new Trip<String, Double, String>("3_EXHAUST_DUCT" , 0.710 ,"e8 [3_EXHAUST_DUCT/7_REAR_ADAPTER 3]"          ));
+      trip_list.add(new Trip<String, Double, String>("3_EXHAUST_DUCT" , 0.710 ,"e2 [3_EXHAUST_DUCT/7_REAR_ADAPTER 4]"          ));
+      trip_list.add(new Trip<String, Double, String>("3_EXHAUST_DUCT" , 0.710 ,"e9 [3_EXHAUST_DUCT/7_REAR_ADAPTER 5]"          ));
+      trip_list.add(new Trip<String, Double, String>("3_EXHAUST_DUCT" , 0.710 ,"e1 [13_SHIELD_COATING/3_EXHAUST_DUCT]"         ));
+      trip_list.add(new Trip<String, Double, String>("3_EXHAUST_DUCT" , 0.710 ,"e1 [12_SHIELD_METAL/3_EXHAUST_DUCT]"           ));
+      trip_list.add(new Trip<String, Double, String>("3_EXHAUST_DUCT" , 0.710 ,"od_1 [12_SHIELD_METAL/3_EXHAUST_DUCT 2]"       ));
+      trip_list.add(new Trip<String, Double, String>("3_EXHAUST_DUCT" , 0.710 ,"w1 [11_DUCT_EXHAUST/3_EXHAUST_DUCT]"           ));
+      trip_list.add(new Trip<String, Double, String>("3_EXHAUST_DUCT" , 0.710 ,"w2 [11_DUCT_EXHAUST/3_EXHAUST_DUCT 2]"         ));
+      trip_list.add(new Trip<String, Double, String>("3_EXHAUST_DUCT" , 0.710 ,"w0 [11_DUCT_EXHAUST/3_EXHAUST_DUCT 3]"         ));
+      trip_list.add(new Trip<String, Double, String>("3_EXHAUST_DUCT" , 0.610 ,"id_face [13_SHIELD_COATING/3_EXHAUST_DUCT 2]"  ));
 
       for (var t : trip_list) {
 

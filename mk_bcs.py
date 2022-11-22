@@ -38,7 +38,7 @@ h_room = 1.0
 
 # MDOT (lbm/s)
 mdot_inlet   = 120.0 / (2.0 * m.pi)
-mdot_annulus =   6.0 / (2.0 * m.pi)
+mdot_annulus =   3.0 / (2.0 * m.pi)
 
 # PRESSURES (PSI)
 p_atm = 101325.0 / 6894.76  # psi

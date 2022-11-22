@@ -32,7 +32,7 @@ public class BC_set extends StarMacro {
     PressureBoundary bc_type_pres = ((PressureBoundary) ss.get(ConditionTypeManager.class).get(PressureBoundary.class));
     b.setBoundaryType(bc_type_pres);
     StaticPressureProfile pprofile = b.getValues().get(StaticPressureProfile.class);
-    pprofile.getMethod(ConstantScalarProfileMethod.class).getQuantity().setValueAndUnits(1.0, uu);
+    pprofile.getMethod(ConstantScalarProfileMethod.class).getQuantity().setValueAndUnits(pressure, uu);
   }
 
   private void set_bc_slip(Boundary b){

@@ -1,5 +1,5 @@
  2 mdot      19.0986 lb/s     1450.0000 F # center  inlet
- 3 mdot       0.9549 lb/s      120.0000 F # annular inlet
+ 3 mdot       0.4775 lb/s      120.0000 F # annular inlet
  4 mdot      19.0986 lb/s     3800.0000 F # exhaust inlet
  5 pres     985.3041 psi      1450.0000 F # center  exit
  6 pres    1035.3041 psi       120.0000 F # annular exit

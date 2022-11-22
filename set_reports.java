@@ -116,7 +116,8 @@ public class set_reports extends StarMacro {
       Boundary b_c_e  = get_boundary_by_number(5); // c exit
       Boundary b_a_e  = get_boundary_by_number(6); // a exit
       Boundary b_e_e  = get_boundary_by_number(7); // e exit
-      Boundary b_iface  = get_boundary_by_name("Default [11_DUCT_EXHAUST/9_DS_BULKHEAD]");
+      //Boundary b_iface  = get_boundary_by_name("Default [11_DUCT_EXHAUST/9_DS_BULKHEAD]");
+      Boundary b_iface  = get_boundary_by_name("i0 [11_DUCT_EXHAUST/9_DS_BULKHEAD]");
 
       if (b_c_i == null) ss.println("b_c_i is null"); 
       if (b_a_i == null) ss.println("b_a_i is null"); 
